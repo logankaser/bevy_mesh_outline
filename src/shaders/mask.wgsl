@@ -25,7 +25,7 @@ struct FragmentOutput {
     @location(1) appearance_data: vec4<f32>,
 }
 
-@group(2) @binding(0) var<uniform> outline_instance: Instance;
+@group(3) @binding(0) var<uniform> outline_instance: Instance;
 
 
 #ifdef MORPH_TARGETS

@@ -5,7 +5,7 @@
 use std::f32::consts::PI;
 
 use bevy::{
-    core_pipeline::prepass::DepthPrepass, pbr::CascadeShadowConfigBuilder, prelude::*,
+    core_pipeline::prepass::DepthPrepass, light::CascadeShadowConfigBuilder, prelude::*,
     scene::SceneInstanceReady,
 };
 use bevy_mesh_outline::{MeshOutline, MeshOutlinePlugin, OutlineCamera};
@@ -59,12 +59,12 @@ fn setup_fox(
 
 // Called when the scene is ready and meshes exist
 fn initialize_outlines(
-    trigger: Trigger<SceneInstanceReady>,
+    trigger: On<SceneInstanceReady>,
     mut commands: Commands,
     children: Query<&Children>,
     mesh_entities: Query<Entity, With<Mesh3d>>,
 ) {
-    for child in children.iter_descendants(trigger.target()) {
+    for child in children.iter_descendants(trigger.event().entity) {
         // If the current entity in scene is a mesh - add outline
         if let Ok(mesh_entity) = mesh_entities.get(child) {
             commands.entity(mesh_entity).insert(MeshOutline::new(10.0));
@@ -74,14 +74,14 @@ fn initialize_outlines(
 }
 
 fn initialize_animations(
-    trigger: Trigger<SceneInstanceReady>,
+    trigger: On<SceneInstanceReady>,
     mut commands: Commands,
     children: Query<&Children>,
     animations_to_play: Query<&AnimationToPlay>,
     mut players: Query<&mut AnimationPlayer>,
 ) {
-    if let Ok(animation_to_play) = animations_to_play.get(trigger.target()) {
-        for child in children.iter_descendants(trigger.target()) {
+    if let Ok(animation_to_play) = animations_to_play.get(trigger.event().entity) {
+        for child in children.iter_descendants(trigger.event().entity) {
             // Setup animations
             if let Ok(mut player) = players.get_mut(child) {
                 player.play(animation_to_play.index).repeat();
