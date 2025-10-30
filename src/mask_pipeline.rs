@@ -1,6 +1,7 @@
 use bevy::{
     core_pipeline::core_3d::CORE_3D_DEPTH_FORMAT,
     ecs::system::{SystemParamItem, lifetimeless::SRes},
+    mesh::MeshVertexBufferLayoutRef,
     pbr::{
         MeshInputUniform, MeshPipeline, MeshPipelineKey, MeshUniform, RenderMeshInstances,
         SkinUniforms,
@@ -12,7 +13,7 @@ use bevy_render::{
         GetBatchData, GetFullBatchData,
         gpu_preprocessing::{IndirectParametersCpuMetadata, UntypedPhaseIndirectParametersBuffers},
     },
-    mesh::{MeshVertexBufferLayoutRef, RenderMesh, allocator::MeshAllocator},
+    mesh::{RenderMesh, allocator::MeshAllocator},
     render_asset::RenderAssets,
     render_resource::{
         BindGroupLayout, BindGroupLayoutEntries, ColorTargetState, ColorWrites, CompareFunction,
@@ -51,7 +52,6 @@ impl FromWorld for MeshMaskPipeline {
 
         Self {
             mesh_pipeline,
-            // instance_batch_size,
             outline_bind_group_layout: outline_instance_bind_group_layout,
         }
     }
@@ -72,7 +72,7 @@ impl SpecializedMeshPipeline for MeshMaskPipeline {
         descriptor.fragment = Some(FragmentState {
             shader: MASK_SHADER_HANDLE,
             shader_defs: vec![],
-            entry_point: "fragment".into(),
+            entry_point: Some("fragment".into()),
             targets: vec![
                 // RT0: flood data (uv.xy, width, depth)
                 Some(ColorTargetState {

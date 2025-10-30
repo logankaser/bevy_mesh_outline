@@ -1,5 +1,5 @@
 use bevy::{
-    core_pipeline::fullscreen_vertex_shader::fullscreen_shader_vertex_state,
+    core_pipeline::FullscreenShader,
     prelude::*,
     render::{
         render_resource::{
@@ -59,11 +59,14 @@ impl FromWorld for ComposeOutputPipeline {
             label: Some("outline_compose_output_pipeline".into()),
             layout: vec![layout.clone()],
             // This will setup a fullscreen triangle for the vertex state
-            vertex: fullscreen_shader_vertex_state(),
+            vertex: world
+                .resource::<FullscreenShader>()
+                .clone()
+                .to_vertex_state(),
             fragment: Some(FragmentState {
                 shader: COMPOSE_SHADER_HANDLE,
                 shader_defs: vec![],
-                entry_point: "fragment".into(),
+                entry_point: Some("fragment".into()),
                 targets: vec![target],
             }),
             primitive: PrimitiveState::default(),

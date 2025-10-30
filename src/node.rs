@@ -45,7 +45,7 @@ impl ViewNode for MeshOutlineNode {
             flood_textures,
             prepass_textures,
             flood_settings,
-        ): QueryItem<'w, Self::ViewQuery>,
+        ): QueryItem<'w, '_, Self::ViewQuery>,
         world: &'w World,
     ) -> Result<(), NodeRunError> {
         let Some(outline_phases) = world.get_resource::<ViewBinnedRenderPhases<MeshOutline3d>>()
@@ -100,6 +100,7 @@ impl ViewNode for MeshOutlineNode {
                 }),
                 store: StoreOp::Store,
             },
+            depth_slice: None,
         };
 
         let appearance_color_attachment = RenderPassColorAttachment {
@@ -114,6 +115,7 @@ impl ViewNode for MeshOutlineNode {
                 }),
                 store: StoreOp::Store,
             },
+            depth_slice: None,
         };
 
         let outline_depth_view = flood_textures

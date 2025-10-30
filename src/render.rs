@@ -25,7 +25,7 @@ impl<P: PhaseItem, const I: usize> RenderCommand<P> for SetOutlineBindGroup<I> {
 
     fn render<'w>(
         item: &P,
-        _view: ROQueryItem<'w, Self::ViewQuery>,
+        _view: ROQueryItem<'w, '_, Self::ViewQuery>,
         _entity_data: Option<()>,
         outline_bind_groups: SystemParamItem<'w, '_, Self::Param>,
         pass: &mut TrackedRenderPass<'w>,

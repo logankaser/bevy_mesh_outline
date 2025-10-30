@@ -17,7 +17,7 @@ fn main() {
             FixedUpdate,
             (
                 rotate,
-                update_size.run_if(on_event::<KeyboardInput>),
+                update_size.run_if(on_message::<KeyboardInput>),
                 update_width_display,
             ),
         )
@@ -66,8 +66,8 @@ fn setup(
 
 fn rotate(mut query: Query<&mut Transform, With<MeshOutline>>, time: Res<Time>) {
     for mut transform in &mut query {
-        let rotation = Quat::from_rotation_y(time.delta_secs() / 2.)
-            * Quat::from_rotation_x(time.delta_secs());
+        let rotation = Quat::from_rotation_y(time.delta_secs() / 6.)
+            * Quat::from_rotation_x(time.delta_secs() / 3.0);
 
         transform.rotation *= rotation;
     }

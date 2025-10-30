@@ -13,14 +13,17 @@ mod view;
 use bevy::{
     core_pipeline::core_3d::graph::{Core3d, Node3d},
     math::Affine3,
-    pbr::{DrawMesh, SetMeshBindGroup, SetMeshViewBindGroup, extract_skins},
+    pbr::{
+        DrawMesh, SetMeshBindGroup, SetMeshViewBindGroup, SetMeshViewBindingArrayBindGroup,
+        extract_skins,
+    },
     prelude::*,
 };
 use bevy_render::{
-    Render, RenderApp, RenderDebugFlags, RenderSet,
+    Render, RenderApp, RenderDebugFlags, RenderSystems,
     batching::gpu_preprocessing::batch_and_prepare_binned_render_phase,
     extract_component::{ExtractComponent, ExtractComponentPlugin},
-    render_graph::{RenderGraphApp, RenderLabel, ViewNodeRunner},
+    render_graph::{RenderGraphExt, RenderLabel, ViewNodeRunner},
     render_phase::{
         AddRenderCommand, BinnedRenderPhasePlugin, DrawFunctions, SetItemPipeline,
         ViewBinnedRenderPhases,
@@ -43,8 +46,9 @@ use crate::shaders::load_shaders;
 pub(crate) type DrawOutline = (
     SetItemPipeline,
     SetMeshViewBindGroup<0>,
-    SetMeshBindGroup<1>,
-    SetOutlineBindGroup<2>,
+    SetMeshViewBindingArrayBindGroup<1>,
+    SetMeshBindGroup<2>,
+    SetOutlineBindGroup<3>,
     DrawMesh,
 );
 
@@ -79,15 +83,15 @@ impl Plugin for MeshOutlinePlugin {
             .add_systems(
                 Render,
                 (
-                    queue_outline.in_set(RenderSet::QueueMeshes),
+                    queue_outline.in_set(RenderSystems::QueueMeshes),
                     (
                         prepare_flood_settings,
                         prepare_flood_textures,
                         prepare_outline_bind_groups.after(prepare_flood_textures),
                     )
-                        .in_set(RenderSet::PrepareBindGroups),
+                        .in_set(RenderSystems::PrepareBindGroups),
                     batch_and_prepare_binned_render_phase::<MeshOutline3d, MeshMaskPipeline>
-                        .in_set(RenderSet::PrepareResources),
+                        .in_set(RenderSystems::PrepareResources),
                 ),
             )
             .add_render_command::<MeshOutline3d, DrawOutline>()
@@ -171,7 +175,7 @@ impl ExtractComponent for MeshOutline {
     type Out = ExtractedOutline;
 
     fn extract_component(
-        (_entity, outline, transform): bevy::ecs::query::QueryItem<'_, Self::QueryData>,
+        (_entity, outline, transform): bevy::ecs::query::QueryItem<'_, '_, Self::QueryData>,
     ) -> Option<Self::Out> {
         let linear_color: LinearRgba = outline.color.into();
         Some(ExtractedOutline {

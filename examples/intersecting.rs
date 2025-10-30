@@ -19,7 +19,7 @@ fn main() {
         .add_systems(
             FixedUpdate,
             (
-                toggle_priority.run_if(on_event::<KeyboardInput>),
+                toggle_priority.run_if(on_message::<KeyboardInput>),
                 update_outline_priorities,
                 update_priority_display,
             ),

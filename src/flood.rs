@@ -1,7 +1,7 @@
 #![allow(dead_code)]
 
 use bevy::{
-    core_pipeline::fullscreen_vertex_shader::fullscreen_shader_vertex_state,
+    core_pipeline::FullscreenShader,
     prelude::*,
     render::{
         render_resource::{
@@ -85,17 +85,19 @@ impl FromWorld for JumpFloodPipeline {
             ..Default::default()
         });
 
+        let fullscreen_shader = world.resource::<FullscreenShader>().clone();
+
         let pipeline_id =
             world
                 .resource_mut::<PipelineCache>()
                 .queue_render_pipeline(RenderPipelineDescriptor {
                     label: Some("outline_jump_flood_pipeline".into()),
                     layout: vec![layout.clone()],
-                    vertex: fullscreen_shader_vertex_state(),
+                    vertex: fullscreen_shader.to_vertex_state(),
                     fragment: Some(FragmentState {
                         shader: FLOOD_SHADER_HANDLE,
                         shader_defs: vec![],
-                        entry_point: "fragment".into(),
+                        entry_point: Some("fragment".into()),
                         targets: vec![Some(ColorTargetState {
                             format: TextureFormat::Rgba32Float,
                             blend: None,
@@ -178,6 +180,7 @@ impl<'w> JumpFloodPass<'w> {
                 view: &output.default_view,
                 resolve_target: None,
                 ops: Operations::default(),
+                depth_slice: None,
             })],
             depth_stencil_attachment: None,
             timestamp_writes: None,

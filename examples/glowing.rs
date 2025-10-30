@@ -1,9 +1,11 @@
 use bevy::{
     color::palettes::css::{BLUE, RED, SILVER},
-    core_pipeline::{bloom::Bloom, prepass::DepthPrepass},
+    core_pipeline::prepass::DepthPrepass,
+    post_process::bloom::Bloom,
     prelude::*,
 };
 use bevy_mesh_outline::{MeshOutline, MeshOutlinePlugin, OutlineCamera};
+use bevy_render::view::Hdr;
 
 fn main() {
     App::new()
@@ -34,10 +36,8 @@ fn setup(
         OutlineCamera,
         DepthPrepass,
         Msaa::Off,
-        Camera {
-            hdr: true,
-            ..default()
-        },
+        Camera::default(),
+        Hdr,
         // Turn on bloom
         Bloom::default(),
     ));

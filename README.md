@@ -103,7 +103,8 @@ Outline data is packed into GPU textures using a flood-fill algorithm that effic
 
 | Bevy |    bevy_mesh_outline |
 |--------------|--------------|
-| 0.16.X       | 0.1.0        |
+| 0.17.X       | 0.2.0        |
+| 0.16.X       | 0.1.1        |
 
 
 ## Future work
